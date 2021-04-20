@@ -1,0 +1,715 @@
+swagger: "2.0"
+
+info:
+  version: "1.0"
+  title: "Delilah Restore"
+  description: "API de servicio de comida en linea"
+
+host: "localhost:3000"
+basePath: "/"
+schemes:
+  - "http"
+
+paths:
+  /usuarios:
+    get:
+      summary: "Lista de Usuarios."
+      description: Arreglo de la lista de usuarios registrados, debe enviarse el token de administrador en el header de la solicitud 
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: Respuesta exitosa
+          schema:
+            type: object
+            properties: 
+                respuesta:
+                  type: string
+                informacion: 
+                  type: string
+                data:
+                  type: object
+  
+  /usuarios/nuevo:
+    post:
+      summary: Crear nuevo usuario
+      description: Esta accion la puede ser un usuario sin registro o un propio administrador
+      produces:
+          - "application/json"
+          - "application/xml"
+      parameters:
+          - name: "Usuario"
+            in: body
+            schema:
+              $ref: "#/definitions/Usuario"
+
+      responses:
+        200:
+          description: Respuesta Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object 
+
+        400:
+          description: Bad Request (Campos vacios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+        
+        404:
+          description: Error Server (Error lado servidor)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+      deprecated: false
+  
+  /usuarios/:usuario:
+    put:
+      summary: Editar Usuario
+      description: "Nota: Debe enviarse el nombre de usuario a editar y solo un administrador puede realizar esta accion, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador"
+      parameters:
+        - name: "Usuario"
+          in: body
+          schema:
+              $ref: "#/definitions/Usuario"
+
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: Respuesta Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object  
+        
+        400:
+          description: Bad Request (Campos vacios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+        
+        404:
+          description: Error en el servidor
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+      deprecated: false
+  
+  /usuarios/delete/:usuario:
+    delete:
+      summary: Eliminar usuarios existentes
+      description: "Nota: Solo un administrador puede eliminar usuarios, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador"
+      responses:
+        200:
+          description: Respuesta exitosa (Se elimino correctamente el usuario)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+        
+        400:
+          description: Bad Request (No se envio el parametro nombre del usuario o se envio vacio)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+    
+      deprecated: false
+
+  /usuarios/sesion:
+    post:
+      summary: Iniciar sesion para un usuario
+      description: "Nota: Iniciar sesion genera un token para el usuario que permite hacer pedidos, tiene un tiempo de vencimiento, este token se tiene que enviar en el header de cada solicitud para poder realizar un pedido"
+      responses:
+        200:
+          description: Respuesta exitosa
+          schema:
+            type: object
+            properties:
+              respuesta: 
+                  type: string
+              informacion:
+                  type: string
+              data:
+                type: object
+              token:
+                type: string
+    
+      deprecated: false
+
+  /administradores:
+    get:
+      summary: Obtener todos los administradores
+      description: Array con los administradores creados y esta solicitud debe contener en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador
+      responses:
+        200:
+          description: Respuesta exitosa
+          schema:
+            type: object
+            properties: 
+                respuesta:
+                  type: string
+                informacion: 
+                  type: string
+                data:
+                  type: object  
+
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+                
+      deprecated: false
+
+  /administradores/nuevo:
+    post:
+      summary: Crear nuevo administrador
+      parameters:
+        - name: "Administrador"
+          in: body
+          schema:
+              $ref: "#/definitions/Administradores"
+      description: Creacion de un nuevo administrador, solo un administrador puede crear, se necesita mandar en el header de la solicitud el token que se proporciona al iniciar sesion
+      responses:
+        200:
+          description: Respuesta Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        400:
+          description: Bad Request (campos vacios o no se detectaron los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+      deprecated: false
+
+  /administradores/:id:
+    put:
+      summary: Editar Administradores
+      description: Solo un administrador puede editar un administrador, se debe mandar en el header de la solicitud el token para tener acceso a editar un administrador
+      parameters:
+        - name: "Administrador"
+          in: body
+          schema:
+            $ref: '#/definitions/Administradores'
+      responses:
+        200:
+          description: Respuesta Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        400:
+          description: Bad Request (campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+      deprecated: false
+
+  /administradores/sesion:
+    post:
+      summary: Iniciar sesion para un administrador
+      description: "Nota: Iniciar sesion genera un token para el usuario que permite hacer pedidos, tiene un tiempo de vencimiento, este token se tiene que enviar en el header de cada solicitud para poder realizar un pedido"
+      responses:
+        200:
+          description: Respuesta exitosa
+          schema:
+            type: object
+            properties:
+              respuesta: 
+                  type: string
+              informacion:
+                  type: string
+              data:
+                type: object
+              token:
+                type: string
+        
+    
+      deprecated: false
+
+  /platos:
+    get:
+      summary: Obtener lista de platos disponibles
+      description: Tanto el usuario y administrador pueden acceder a lista de platos
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties:
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+    
+      deprecated: false
+
+  /platos/nuevo:
+    post:
+      summary: Creacion de nuevos platos
+      description: Solo un administrador puede crear platos nuevos, para crear platos se necesita mandar el token del administrador en el header de la solicitud
+      parameters:
+        - name: "Platos"
+          in: body
+          schema:
+            $ref: "#/definitions/Platos"
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+      deprecated: false
+
+  /platos/:nombre-plato:
+    put:
+      summary: Editar informacion de Platos
+      description: Solo un administrador puede editar la informacion de un plato, se tiene que mandar el token en el header de la solicitud
+      parameters:
+        - name: "Plato"
+          in: body
+          schema:
+            $ref: "#/definitions/Platos"
+      responses:
+        200:
+          description: Respuesta Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+
+        
+    
+      deprecated: false
+  
+  /platos/delete/:nombre-plato:
+    delete:
+      summary: Eliminar platos
+      description: Solo un administrador puede eliminar registros de platos, se debe mandar el token del administrador en el header de la solicitud
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        
+    
+      deprecated: false
+
+  /pedidos:
+    get:
+      summary: Listar registros de pedidos 
+      description: Lista registros de pedido segun administrador o usuario, se debe mandar el token en el header de la solicitud 
+
+      responses:
+        200:
+          description: Respuesta exitosa
+          schema:
+            type: object
+            properties: 
+                respuesta:
+                  type: string
+                informacion: 
+                  type: string
+                datos:
+                  type: object
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        
+    
+      deprecated: false
+
+  /pedidos/nuevo:
+    post:
+      summary: Registar nuevos pedidos
+      description: "Solo un usuario o adminitrador puede realizar pedidos, se debe mandar el token del usuario en el header de la solicitud, es importante recalcar que el campo descripcion debe ir en formato json.stringfy;
+      EXPLICACION PEDIDOS
+      Para agregar un pedido a la base de datos, se necesita un id de usuario existente, descripcion de los productos que comprara el usuario en formato JSON.stringfy, estado del pedido se decidio guardarlo con numeros enteros, 0 => NUEVO 1 => CONFIRMADO 2 => PREPARANDO 3 => ENVIANDO 4 => CANCELADO 5 => ENTREGADO, forma de pago de la misma manera 0 => CREDITO 1 => EFECTIVO, total a pagar en NUMEROS DECIMALES"
+      parameters:
+        - name: "Pedido"
+          in: body
+          schema:
+            $ref: "#/definitions/Pedido"
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+
+        
+    
+      deprecated: false
+
+  /pedidos/:id_pedido:
+    put:
+      summary: Editar Registros de pedidos
+      description: "Solo un administrador puede modificar el estado de un pedido, de la siguiente manera: 0 => NUEVO 1 => CONFIRMADO 2 => PREPARANDO 3 => ENVIANDO 4 => CANCELADO 5 => ENTREGADO"
+      parameters:
+        - name: "Pedido"
+          in: body
+          schema:
+            properties: 
+              estado:
+                type: integer
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+          
+        
+    
+      deprecated: false
+
+  /pedidos/:id:
+    get:
+      summary: Obtener informacion de un pedido
+      description: Tanto un administrador o usuario puede ver informacion de un pedido, en el caso del usuario de su pedido, se necesita mandar en el header de la solicitud el token
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
+        
+        
+    
+      deprecated: false
+definitions:
+  Usuario:
+    type: "object"
+    properties:
+      usuario:
+        type: "string"
+      password:
+        type: "string"
+      nombre:
+        type: "string"
+      apellido:
+        type: "string"
+      correo:
+        type: "string"
+      direccion:
+        type: "string"
+      telefono:
+        type: "number"
+
+  Administradores:
+    type: "object"
+    properties:
+      usuario:
+        type: "string"
+      password:
+        type: "string"
+
+  Platos:
+    type: "object"
+    properties:
+      nombre:
+        type: "string"
+      precio:
+        type: "string"
+
+  Pedido:
+    type: "object"
+    properties:
+      id_usuario:
+        type: "integer"
+      descripcion:
+        type: "string"
+      tipo_pago:
+        type: "integer"
+      total:
+        type: "number"
