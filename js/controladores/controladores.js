@@ -489,7 +489,7 @@ exports.buscarUsuarios = async (req, res, next) => {
 
     const tokenDecode = jwt.decode(token, secret1);
 
-    if(tokenDecode.tipo === 'admin'){
+    
         
         if(!usuario){
             res.status(400).send({
@@ -521,14 +521,7 @@ exports.buscarUsuarios = async (req, res, next) => {
             }
 
         }
-    }else{
-
-        res.status(401).send({
-            respuesta: 'error',
-            informacion: 'No tienes los permisos necesarios'
-        })
-
-    }
+    
 
 }
 

@@ -80,7 +80,7 @@ paths:
   /usuarios/:usuario:
     put:
       summary: Editar Usuario
-      description: "Nota: Debe enviarse el nombre de usuario a editar y solo un administrador puede realizar esta accion, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador"
+      description: "Nota: Debe enviarse el nombre de usuario a editar y solo un administrador puede realizar esta accion, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' "
       parameters:
         - name: "Usuario"
           in: body
@@ -126,7 +126,7 @@ paths:
   /usuarios/delete/:usuario:
     delete:
       summary: Eliminar usuarios existentes
-      description: "Nota: Solo un administrador puede eliminar usuarios, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador"
+      description: "Nota: Solo un administrador puede eliminar usuarios, en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' "
       responses:
         200:
           description: Respuesta exitosa (Se elimino correctamente el usuario)
@@ -186,7 +186,7 @@ paths:
   /administradores:
     get:
       summary: Obtener todos los administradores
-      description: Array con los administradores creados y esta solicitud debe contener en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador
+      description: "Array con los administradores creados y esta solicitud debe contener en el header de la solicitud debe enviarse el token que se otorga al iniciar sesion el administrador, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' " 
       responses:
         200:
           description: Respuesta exitosa
@@ -222,7 +222,7 @@ paths:
           in: body
           schema:
               $ref: "#/definitions/Administradores"
-      description: Creacion de un nuevo administrador, solo un administrador puede crear, se necesita mandar en el header de la solicitud el token que se proporciona al iniciar sesion
+      description: " Creacion de un nuevo administrador, solo un administrador puede crear, se necesita mandar en el header de la solicitud el token que se proporciona al iniciar sesion, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios'  "
       responses:
         200:
           description: Respuesta Exitosa
@@ -262,7 +262,7 @@ paths:
   /administradores/:id:
     put:
       summary: Editar Administradores
-      description: Solo un administrador puede editar un administrador, se debe mandar en el header de la solicitud el token para tener acceso a editar un administrador
+      description: Solo un administrador puede editar un administrador, se debe mandar en el header de la solicitud el token para tener acceso a editar un administrador, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' 
       parameters:
         - name: "Administrador"
           in: body
@@ -349,7 +349,7 @@ paths:
   /platos/nuevo:
     post:
       summary: Creacion de nuevos platos
-      description: Solo un administrador puede crear platos nuevos, para crear platos se necesita mandar el token del administrador en el header de la solicitud
+      description: Solo un administrador puede crear platos nuevos, para crear platos se necesita mandar el token del administrador en el header de la solicitud, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' 
       parameters:
         - name: "Platos"
           in: body
@@ -396,7 +396,7 @@ paths:
   /platos/:nombre-plato:
     put:
       summary: Editar informacion de Platos
-      description: Solo un administrador puede editar la informacion de un plato, se tiene que mandar el token en el header de la solicitud
+      description: " Solo un administrador puede editar la informacion de un plato, se tiene que mandar el token en el header de la solicitud, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' " 
       parameters:
         - name: "Plato"
           in: body
@@ -446,7 +446,7 @@ paths:
   /platos/delete/:nombre-plato:
     delete:
       summary: Eliminar platos
-      description: Solo un administrador puede eliminar registros de platos, se debe mandar el token del administrador en el header de la solicitud
+      description: "Solo un administrador puede eliminar registros de platos, se debe mandar el token del administrador en el header de la solicitud, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' "
       responses:
         200:
           description: Respuest Exitosa
@@ -490,7 +490,7 @@ paths:
   /pedidos:
     get:
       summary: Listar registros de pedidos 
-      description: Lista registros de pedido segun administrador o usuario, se debe mandar el token en el header de la solicitud 
+      description: Lista registros de pedido segun administrador o usuario, se debe mandar el token en el header de la solicitud, Si solicita un administador se listara todos los pedidos, si solicita un usuairo unicamente listara sus pedidos. 
 
       responses:
         200:
@@ -574,7 +574,7 @@ paths:
   /pedidos/:id_pedido:
     put:
       summary: Editar Registros de pedidos
-      description: "Solo un administrador puede modificar el estado de un pedido, de la siguiente manera: 0 => NUEVO 1 => CONFIRMADO 2 => PREPARANDO 3 => ENVIANDO 4 => CANCELADO 5 => ENTREGADO"
+      description: "Solo un administrador puede modificar el estado de un pedido, de la siguiente manera: 0 => NUEVO 1 => CONFIRMADO 2 => PREPARANDO 3 => ENVIANDO 4 => CANCELADO 5 => ENTREGADO, si solicita un usuario generara una respuesta 'No tienes los permisos necesarios' "
       parameters:
         - name: "Pedido"
           in: body
@@ -664,6 +664,51 @@ paths:
               data: 
                 type: object
         
+        
+    
+      deprecated: false
+
+
+  /usuarios/buscar/:usuario:
+    get:
+      summary: Obtener informacion sobre un usuario
+      description: Tanto un administrador o usuario puede ver informacion de un usuairo
+      responses:
+        200:
+          description: Respuest Exitosa
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        400:
+          description: Bad Request(Campos vacios o no se detecto los campos necesarios)
+          schema:
+            type: object
+            properties: 
+              respuesta:
+                type: string
+              informacion:
+                type: string
+              data:
+                type: object
+        
+        401:
+          description: No autorizado (Expiro el token o no se detecto el token en el headers de la solicitud)
+          schema:
+            type: object
+            properties: 
+              respuesta: 
+                type: string
+              informacion:
+                type: string
+              data: 
+                type: object
         
     
       deprecated: false
